@@ -12,35 +12,21 @@ searchForm.append(input, searchBtn, blockForResult);
 document.body.append(searchForm);
 
 class Posts {
-  constructor() {}
-  async getPosts(url) {
+  constructor() {
+    this.posts = [];
+    this.foundPost = null;
+  }
+  async getPosts() {
     try {
-      let response = await fetch(url);
-      if (response.status === 200) {
+      let response = await fetch('https://jsonplaceholder.typicode.com/posts/');
+      if (response.status >= 200 || response.status < 300) {
         this.posts = await response.json();
-        this.render();
       }
     } catch (err) {
       console.log(err);
       return;
     }
-  }
-  render() {
-    if (this.foundPost !== null) {
-      console.log(this.foundPost);
-      let newFoundPost = new Card(
-        this.foundPost.id,
-        this.foundPost.title,
-        this.foundPost.body
-      );
-      newFoundPost.render();
-      return;
-    }
-
-    this.posts.forEach((post) => {
-      let postCard = new Card(post.id, post.title, post.body);
-      postCard.render();
-    });
+    return this;
   }
   findPost() {
     searchForm.addEventListener('submit', (e) => {
@@ -50,9 +36,26 @@ class Posts {
       if (!this.foundPost) {
         blockForResult.textContent = 'there is no post with entered id';
       }
-      this.render();
       e.target.reset();
+      console.log(this);
     });
+    return this;
+  }
+  render() {
+    if (this.foundPost) {
+      let newFoundPost = new Card(
+        this.foundPost.id,
+        this.foundPost.title,
+        this.foundPost.body
+      );
+      newFoundPost.render();
+      return;
+    }
+    this.posts.forEach((post) => {
+      let postCard = new Card(post.id, post.title, post.body);
+      postCard.render();
+    });
+    return this;
   }
 }
 
@@ -75,5 +78,6 @@ class Card {
 }
 
 let newPost = new Posts();
-newPost.getPosts('https://jsonplaceholder.typicode.com/posts/');
+newPost.getPosts();
 newPost.findPost();
+newPost.render();
