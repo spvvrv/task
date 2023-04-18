@@ -28,17 +28,12 @@ class Posts {
     }
     return this;
   }
-  findPost() {
-    searchForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      let id = +input.value;
-      this.foundPost = this.posts.find((post) => post.id === id);
-      if (!this.foundPost) {
-        blockForResult.textContent = 'there is no post with entered id';
-      }
-      e.target.reset();
-      console.log(this);
-    });
+  findPost(id) {
+    this.foundPost = this.posts.find((post) => post.id === id);
+    if (!this.foundPost) {
+      blockForResult.textContent = 'there is no post with entered id';
+    }
+    this.render();
     return this;
   }
   render() {
@@ -77,7 +72,17 @@ class Card {
   }
 }
 
+searchForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  let id = +input.value;
+  e.target.reset();
+  newPost.findPost(id);
+});
+
 let newPost = new Posts();
-newPost.getPosts();
-newPost.findPost();
+// newPost.getPosts().then((res) => {
+//   res.render();
+// });
+
+await newPost.getPosts();
 newPost.render();
